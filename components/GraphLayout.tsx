@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import NodeCard from "./NodeCard"
 import EdgeLayer from "./EdgeLayer"
+import DetailPanel from "./DetailPanel"
 
 type NodeData = {
   id: string
@@ -13,10 +14,8 @@ type NodeData = {
 }
 
 type Edge = {
-  x1: number
-  y1: number
-  x2: number
-  y2: number
+  d: string
+  skipGap?: number
 }
 
 const nodes: NodeData[] = [
@@ -50,8 +49,8 @@ const nodes: NodeData[] = [
   {
     id: "p4",
     title: "Yet Another Storage Engine (YASE)",
-    description: "A custom storage engine supporting storage, indexing, logging, and concurrency control",
-    tags: ["C++"],
+    description: "A custom storage engine",
+    tags: ["C++", "Concurrency"],
     level: "project"
   },
   {
@@ -68,76 +67,51 @@ export default function GraphLayout() {
 
   const containerRef = useRef<HTMLDivElement>(null)
   const nodeRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const detailRef = useRef<HTMLDivElement>(null)
   const [edges, setEdges] = useState<Edge[]>([])
 
   function computeEdges() {
     const container = containerRef.current
     const root = nodeRefs.current["root"]
+    const detail = detailRef.current
+    if (!container || !root || !detail) return
 
-    if (!container || !root) return
-
-    const containerRect = container.getBoundingClientRect()
-    const rootRect = root.getBoundingClientRect()
-
-    const projects = nodes.filter(n => n.level === "project")
-
-    const projectRects = projects
-      .map(p => ({
-        id: p.id,
-        rect: nodeRefs.current[p.id]?.getBoundingClientRect()
-      }))
-      .filter(p => p.rect)
-
-    if (projectRects.length === 0) return
-
-    const rootX = rootRect.left - containerRect.left + rootRect.width / 2
-
-    const rootBottom = rootRect.bottom - containerRect.top
-
-    const projectCenters = projectRects.map(p => {
-      const rect = p.rect!
-
-      return {
-        id: p.id,
-        x: rect.left - containerRect.left + rect.width / 2,
-        top: rect.top - containerRect.top
-      }
+    const cRect = container.getBoundingClientRect()
+    const toLocal = (rect: DOMRect) => ({
+      centerX: rect.left - cRect.left + rect.width / 2,
+      top:     rect.top  - cRect.top,
+      bottom:  rect.bottom - cRect.top,
     })
 
-    const firstProjectTop = Math.min(...projectCenters.map(p => p.top))
+    const rootLocal = toLocal(root.getBoundingClientRect())
+    const detailLocal = toLocal(detail.getBoundingClientRect())
 
-    const busY = rootBottom + (firstProjectTop - rootBottom) / 2
-
-    const leftMost = Math.min(...projectCenters.map(p => p.x))
-    const rightMost = Math.max(...projectCenters.map(p => p.x))
-
-    const newEdges: Edge[] = []
-
-    // trunk
-    newEdges.push({
-      x1: rootX,
-      y1: rootBottom,
-      x2: rootX,
-      y2: busY
-    })
-
-    // horizontal bus
-    newEdges.push({
-      x1: leftMost,
-      y1: busY,
-      x2: rightMost,
-      y2: busY,
-    })
-
-    // project branches
-    projectCenters.forEach((p, i) => {
-      newEdges.push({
-        x1: p.x,
-        y1: busY,
-        x2: p.x,
-        y2: p.top,
+    const projectPoints = nodes
+      .filter(n => n.level === "project")
+      .flatMap(n => {
+        const el = nodeRefs.current[n.id]
+        if (!el) return []
+        return [{ id: n.id, ...toLocal(el.getBoundingClientRect()) }]
       })
-    })
+
+    if (projectPoints.length === 0) return
+
+    const sCurve = (sx: number, sy: number, ex: number, ey: number) => {
+      const dy = ey - sy
+      const strn = 0.9
+      return `M ${sx} ${sy} C ${sx} ${sy + dy * strn} ${ex} ${ey - dy * strn} ${ex} ${ey}`
+    }
+
+    const newEdges: Edge[] = [
+      // root → project nodes
+      ...projectPoints.map(p => ({
+        d: sCurve(rootLocal.centerX, rootLocal.bottom, p.centerX, p.top)
+      })),
+      // project nodes → detail panel
+      ...projectPoints.map(p => ({
+          d: sCurve(p.centerX, p.bottom, detailLocal.centerX, detailLocal.top)
+        }))
+    ]
 
     setEdges(newEdges)
   }
@@ -158,7 +132,7 @@ export default function GraphLayout() {
 
     <div
       ref={containerRef}
-      className="relative w-full flex flex-col items-center pt-24 gap-20"
+      className="relative w-full flex flex-col items-center pt-5 gap-8"
     >
 
       <EdgeLayer edges={edges} />
@@ -173,7 +147,6 @@ export default function GraphLayout() {
       )}
 
       <div className="flex gap-12">
-
         {projectNodes.map(node => (
 
           <NodeCard
@@ -185,8 +158,9 @@ export default function GraphLayout() {
           />
 
         ))}
-
       </div>
+
+      <DetailPanel ref={detailRef} />
 
     </div>
 

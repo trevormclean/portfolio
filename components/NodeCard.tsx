@@ -16,6 +16,7 @@ const NodeCard = forwardRef<HTMLDivElement, NodeCardProps>(
       ref={ref}
       onClick={onClick}
       className="
+        relative
         w-64
         p-4
         rounded-xl
