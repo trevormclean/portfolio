@@ -1,4 +1,3 @@
-// GraphLayout.tsx  (replace the Edge type, computeEdges, edges state, and EdgeLayer usage)
 "use client"
 
 import { useEffect, useRef, useState } from "react"
@@ -11,6 +10,7 @@ type NodeData = {
   title: string
   description: string
   tags?: string[]
+  links?: {label: string, href: string}[]
   level: "root" | "project"
 }
 
@@ -20,19 +20,24 @@ const nodes: NodeData[] = [
     title: "Trevor McLean",
     description: "Software developer interested in systems and performance",
     level: "root",
+    links: [
+      { label: "GitHub", href: "https://github.com/trevormclean" },
+      { label: "LinkedIn", href: "https://www.linkedin.com/in/trevor-mclean/" },
+      { label: "Resume", href: "https://drive.google.com/file/d/19sdSUJINjx9bz5A0bwHy-YnB51KBh51_/view?usp=sharing" }
+    ]
   },
   {
     id: "powercool",
     title: "PowerCool Hub",
     description: "Handles logistics for PowerCool, an HVAC company",
-    tags: ["Java", "JavaScript", "Spring Boot"],
+    tags: ["Java", "JavaScript", "PostgreSQL", "Spring Boot", "HTML", "CSS"],
     level: "project",
   },
   {
     id: "compile-time-tester",
     title: "Automated Compile-time Feature Tester",
     description: "Differential testing for C++ compile-time features",
-    tags: ["C++", "Clang AST", "Python"],
+    tags: ["C++", "Python", "CMake", "Clang AST"],
     level: "project",
   },
   {
@@ -46,14 +51,14 @@ const nodes: NodeData[] = [
     id: "yase",
     title: "Yet Another Storage Engine (YASE)",
     description: "A custom storage engine",
-    tags: ["C++", "Concurrency"],
+    tags: ["C++", "Concurrency", "Database Systems"],
     level: "project",
   },
   {
     id: "portfolio",
-    title: "Personal Portfolio",
+    title: "Interactive Portfolio",
     description: "This website displaying my project experience",
-    tags: ["TypeScript", "React", "Next.js"],
+    tags: ["TypeScript", "React", "Next.js", "Tailwind", "SVG", "AI-Assisted"],
     level: "project",
   }
 ]
@@ -186,7 +191,7 @@ export default function GraphLayout() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full flex flex-col items-center pt-5 gap-12"
+      className="relative w-full flex flex-col items-center pt-8 gap-12"
     >
       <EdgeLayer wires={wires} selectedNodeId={selectedProjectId} />
 
@@ -196,6 +201,7 @@ export default function GraphLayout() {
           title={rootNode.title}
           description={rootNode.description}
           tags={rootNode.tags}
+          links={rootNode.links}
         />
       )}
 
