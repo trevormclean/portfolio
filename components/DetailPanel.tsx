@@ -1,6 +1,7 @@
 import { forwardRef } from "react"
 import { useEffect, useState } from "react"
 import { projectDetails } from "./ProjectDetails"
+import LinkChip from "./LinkChip"
 
 type Props = {
   selectedProjectId?: string
@@ -36,7 +37,7 @@ const DetailPanel = forwardRef<HTMLDivElement, Props>(
         relative
         w-full
         max-w-5xl
-        min-h-80
+        min-h-88
         p-3
         rounded-xl
         border
@@ -65,9 +66,18 @@ const DetailPanel = forwardRef<HTMLDivElement, Props>(
 
         {project && (
           <>
-            <h2 className="text-center text-xl font-semibold text-slate-200 mb-2">
-              {project.title}
-            </h2>
+            <div className="flex items-center justify-center relative mb-2">
+              <h2 className="text-xl font-semibold text-slate-200">
+                {project.title}
+              </h2>
+              {project.links && (
+                <div className="absolute right-0 flex gap-1">
+                  {project.links.map(link => (
+                    <LinkChip key={link.label} label={link.label} href={link.href} />
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="border-t border-cyan-400/20 mb-3"></div>
 

@@ -1,5 +1,5 @@
-// NodeCard.tsx — remove hover classes, add selected prop
 import { forwardRef } from "react"
+import LinkChip from "./LinkChip"
 
 type NodeCardProps = {
   title: string
@@ -7,17 +7,19 @@ type NodeCardProps = {
   tags?: string[]
   onClick?: () => void
   selected?: boolean
+  links?: {label: string, href: string}[] 
 }
 
 const NodeCard = forwardRef<HTMLDivElement, NodeCardProps>(
-({ title, description, tags = [], onClick, selected }, ref) => {
+({ title, description, tags = [], onClick, selected, links = []}, ref) => {
   return (
     <div
       ref={ref}
       onClick={onClick}
       className={`
-        relative w-64 px-4 pt-2 pb-4 rounded-xl border bg-slate-900 select-none
-        transition-all duration-200 ease-out cursor-pointer
+        relative w-70 px-4 pt-2 pb-4 rounded-xl border bg-slate-900 select-none
+        transition-all duration-200 ease-out
+        ${onClick ? "cursor-pointer" : "cursor-default"}
         ${selected
           ? "border-cyan-400 shadow-[0_0_18px_rgba(56,189,248,0.35)]"
           : "border-cyan-400/30 shadow-[0_0_10px_rgba(56,189,248,0.15)]"
@@ -32,7 +34,11 @@ const NodeCard = forwardRef<HTMLDivElement, NodeCardProps>(
             {tag}
           </span>
         ))}
+        {links.map(link => (
+          <LinkChip key={link.label} label={link.label} href={link.href} />
+        ))}
       </div>
+        
     </div>
   )
 })

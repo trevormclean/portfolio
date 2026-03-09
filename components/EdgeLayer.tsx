@@ -26,7 +26,7 @@ export default function EdgeLayer({ wires, selectedNodeId }: EdgeLayerProps) {
                   d={path} fill="none" strokeLinecap="butt" strokeLinejoin="round"
                   strokeWidth="8"
                   style={{
-                    stroke: sel ? "#38bdf8" : "#0e7490",
+                    stroke: sel ? "#38bdf8" : "#155e75",
                     opacity: sel ? 0.05 : 0,
                     transition: "opacity 200ms ease-out, stroke 200ms ease-out"
                   }}
@@ -35,7 +35,7 @@ export default function EdgeLayer({ wires, selectedNodeId }: EdgeLayerProps) {
                   d={path} fill="none" strokeLinecap="butt" strokeLinejoin="round"
                   strokeWidth="4"
                   style={{
-                    stroke: sel ? "#38bdf8" : "#0e7490",
+                    stroke: sel ? "#38bdf8" : "#155e75",
                     opacity: sel ? 0.2 : 0,
                     transition: "opacity 200ms ease-out, stroke 200ms ease-out"
                   }}
