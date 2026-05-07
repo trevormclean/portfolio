@@ -20,7 +20,11 @@
 }
 
 body {
-  background: var(--background);
+  min-width: fit-content;
+  background-color: #0b0f14;
+  background-image: radial-gradient(rgba(56,189,248,0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: 0px 11px;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
