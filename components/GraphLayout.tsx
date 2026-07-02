@@ -181,8 +181,17 @@ export default function GraphLayout() {
 
   useEffect(() => {
     computeWires()
+    const ro = new ResizeObserver(() => computeWires())
+    Object.values(nodeRefs.current).forEach((el) => {
+      if (el) ro.observe(el)
+    })
+    if (detailRef.current) ro.observe(detailRef.current)
+
     window.addEventListener("resize", computeWires)
-    return () => window.removeEventListener("resize", computeWires)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener("resize", computeWires)
+    }
   }, [])
 
   const rootNode = nodes.find((n) => n.level === "root")
@@ -191,7 +200,7 @@ export default function GraphLayout() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full flex flex-col items-center pt-8 gap-12"
+      className="relative w-full flex flex-col items-center pb-[clamp(1rem,4vh,2rem)] pt-[clamp(1rem,3vh,2rem)] gap-[clamp(0.75rem,3vh,3rem)]"
     >
       <EdgeLayer wires={wires} selectedNodeId={selectedProjectId} />
 
@@ -205,7 +214,7 @@ export default function GraphLayout() {
         />
       )}
 
-      <div className="flex gap-12">
+      <div className="flex gap-[clamp(0.5rem,1vw,3rem)]">
         {projectNodes.map((node) => (
           <NodeCard
             key={node.id}

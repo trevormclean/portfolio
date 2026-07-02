@@ -36,8 +36,8 @@ const DetailPanel = forwardRef<HTMLDivElement, Props>(
       className="
         relative
         w-full
-        max-w-5xl
-        min-h-88
+        max-w-[min(92vw,64rem)]
+        min-h-[24rem]
         p-2
         rounded-xl
         border

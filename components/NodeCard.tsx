@@ -17,7 +17,7 @@ const NodeCard = forwardRef<HTMLDivElement, NodeCardProps>(
       ref={ref}
       onClick={onClick}
       className={`
-        relative w-70 px-4 pt-2 pb-4 rounded-xl border bg-slate-900 select-none
+        relative w-[clamp(11rem,17vw,17.5rem)] px-4 pt-2 pb-4 rounded-xl border bg-slate-900 select-none
         transition-all duration-200 ease-out
         ${onClick ? "cursor-pointer" : "cursor-default"}
         ${selected
